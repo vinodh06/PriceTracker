@@ -9,30 +9,32 @@
 import SwiftUI
 
 struct StockFeedView: View {
-    @State var stocks: [StockQuote] = []
-    @State var isConnected: Bool = false
+
+    @State var viewModel = StockFeedViewModel()
     
     var body: some View {
         NavigationStack {
             NavigationStack {
-                List(stocks) { stock in
+                List(viewModel.stocks) { stock in
                     NavigationLink(
                         destination: StockFeedDetailView(stockQuote: stock)
                     ) {
                         StockFeedItemView(stock: stock)
                     }
                 }
+                .animation(.default, value: viewModel.stocks)
             }
             .navigationBarHidden(true)
             .safeAreaInset(edge: .top, spacing: 0) {
-                CustomToolbar(isConnected: $isConnected)
+                CustomToolbar()
             }
         }
+        .environment(viewModel)
     }
 }
 
 struct CustomToolbar: View {
-    @Binding var isConnected: Bool
+    @Environment(StockFeedViewModel.self) var viewModel
     
     var body: some View {
         Text("Feed")
@@ -43,17 +45,17 @@ struct CustomToolbar: View {
                 HStack {
                     HStack(spacing: 6) {
                         Circle()
-                            .fill(isConnected ? .green : .red)
+                            .fill(viewModel.isConnected ? .green : .red)
                             .frame(width: 20, height: 20)
-                        Text(isConnected ? "Connected" : "Disconnected")
+                        Text(viewModel.isConnected ? "Connected" : "Disconnected")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                     
                     Spacer()
                     
-                    Button(isConnected ? "Stop" : "Start") {
-                        isConnected.toggle()
+                    Button(viewModel.isConnected ? "Stop" : "Start") {
+                        viewModel.isConnected ? viewModel.disconnect() : viewModel.connect()
                     }
                     .font(.title3)
                 }
@@ -90,5 +92,5 @@ struct StockFeedItemView: View {
 }
 
 #Preview {
-    StockFeedView(stocks: StockQuote.data)
+    StockFeedView()
 }
