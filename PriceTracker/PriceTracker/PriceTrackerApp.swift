@@ -11,7 +11,7 @@ import SwiftUI
 struct PriceTrackerApp: App {
     var body: some Scene {
         WindowGroup {
-            Text("Hello world!")
+            StockFeedView(stocks: StockQuote.data)
         }
     }
 }
