@@ -16,7 +16,11 @@ struct StockFeedView: View {
         NavigationStack {
             NavigationStack {
                 List(stocks) { stock in
-                    StockFeedItemView(stock: stock)
+                    NavigationLink(
+                        destination: StockFeedDetailView(stockQuote: stock)
+                    ) {
+                        StockFeedItemView(stock: stock)
+                    }
                 }
             }
             .navigationBarHidden(true)
