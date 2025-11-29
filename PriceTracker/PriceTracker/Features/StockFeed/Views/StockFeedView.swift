@@ -9,25 +9,26 @@
 import SwiftUI
 
 struct StockFeedView: View {
-
-    @State var viewModel = StockFeedViewModel()
+    @State var viewModel: StockFeedViewModel
+    
+    init(environment: AppEnvironment = .real) {
+        self.viewModel = StockFeedViewModel(environment: environment)
+    }
     
     var body: some View {
         NavigationStack {
-            NavigationStack {
-                List(viewModel.stocks) { stock in
-                    NavigationLink(
-                        destination: StockFeedDetailView(stockQuote: stock)
-                    ) {
-                        StockFeedItemView(stock: stock)
-                    }
+            List(viewModel.stocks) { stock in
+                NavigationLink(
+                    destination: StockFeedDetailView(stockQuote: stock)
+                ) {
+                    StockFeedItemView(stock: stock)
                 }
-                .animation(.default, value: viewModel.stocks)
             }
-            .navigationBarHidden(true)
-            .safeAreaInset(edge: .top, spacing: 0) {
-                CustomToolbar()
-            }
+            .animation(.default, value: viewModel.stocks)
+        }
+        .navigationBarHidden(true)
+        .safeAreaInset(edge: .top, spacing: 0) {
+            CustomToolbar()
         }
         .environment(viewModel)
     }
@@ -45,19 +46,20 @@ struct CustomToolbar: View {
                 HStack {
                     HStack(spacing: 6) {
                         Circle()
-                            .fill(viewModel.isConnected ? .green : .red)
+                            .fill(viewModel.isSocketConnected ? .green : .red)
                             .frame(width: 20, height: 20)
-                        Text(viewModel.isConnected ? "Connected" : "Disconnected")
+                        Text(viewModel.socketConnectionState.connectionStatusText)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                     
                     Spacer()
                     
-                    Button(viewModel.isConnected ? "Stop" : "Start") {
-                        viewModel.isConnected ? viewModel.disconnect() : viewModel.connect()
+                    Button(viewModel.isSocketConnected ? "Stop" : "Start") {
+                        viewModel.actConnect()
                     }
                     .font(.title3)
+                    .disabled(viewModel.socketConnectionState == .connecting)
                 }
                 .padding(.horizontal)
                 .padding(.vertical, 12)
