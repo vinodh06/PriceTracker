@@ -11,7 +11,7 @@ import SwiftUI
 struct StockFeedView: View {
     @State var viewModel: StockFeedViewModel
     
-    init(environment: AppEnvironment = .real) {
+    init(environment: AppEnvironment) {
         self.viewModel = StockFeedViewModel(environment: environment)
     }
     
