@@ -61,7 +61,7 @@ extension RealWebSocketClient: WebSocketClientProtocol {
         self.connectionSubject.send(.connecting)
         
         Task { @MainActor in
-            try? await Task.sleep(for: .seconds(1))
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
             self.connectionSubject.send(.connected)
             self.receive()
         }

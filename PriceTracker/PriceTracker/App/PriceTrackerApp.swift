@@ -12,7 +12,7 @@ struct PriceTrackerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            StockFeedView(environment: .real)
+            StockFeedView()
         }
     }
 }

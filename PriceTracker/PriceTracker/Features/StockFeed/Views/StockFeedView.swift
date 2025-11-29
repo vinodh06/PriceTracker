@@ -39,7 +39,7 @@ struct StockFeedView: View {
     @State var viewModel: StockFeedViewModel
     @State private var navigationPath = NavigationPath()
     
-    init(environment: AppEnvironment) {
+    init(environment: AppEnvironment = .real) {
         self.viewModel = StockFeedViewModel(environment: environment)
     }
     
