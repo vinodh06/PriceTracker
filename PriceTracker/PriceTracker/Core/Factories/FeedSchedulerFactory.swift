@@ -15,6 +15,9 @@ struct FeedSchedulerFactory {
         
         case .mock:
             return MockFeedScheduler()
+            
+        case .test:
+            return TestFeedScheduler()
         }
     }
 }

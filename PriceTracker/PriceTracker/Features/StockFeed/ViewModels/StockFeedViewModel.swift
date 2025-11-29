@@ -13,7 +13,7 @@ import Observation
 @Observable
 class StockFeedViewModel {
     // MARK: - Published Properties
-    var stocks: [StockQuote] = []
+    var stocks: [StockQuote] = StockQuote.data
     var socketConnectionState: WebSocketConnectionState = .disconnected
     
     // MARK: - Computed Properties
@@ -30,6 +30,15 @@ class StockFeedViewModel {
     init(environment: AppEnvironment) {
         self.webSocketClient = WebSocketFactory.makeService(for: environment)
         self.scheduler = FeedSchedulerFactory.makeService(for: environment)
+        setupWebSocketSubscriptions()
+    }
+    
+    init (
+        webSocketClient: WebSocketClientProtocol,
+        scheduler: FeedSchedulerProtocol
+    ) {
+        self.webSocketClient = webSocketClient
+        self.scheduler = scheduler
         
         setupWebSocketSubscriptions()
     }
@@ -94,15 +103,12 @@ class StockFeedViewModel {
         scheduler.stop()
     }
     
-    func sendPriceUpdates() {
+    private func sendPriceUpdates() {
         guard isSocketConnected else {
             return
         }
 
-        let stocksToUpdate = stocks.isEmpty ? StockQuote.data : stocks
-        let updatedStocks = stocksToUpdate.map {
-            $0.withUpdatedPrice(Double.random(in: 100...500))
-        }
+        let updatedStocks = stocks.map { $0.withUpdatedPrice(Double.random(in: 1...500)) }
         
         webSocketClient.send(updatedStocks)
     }

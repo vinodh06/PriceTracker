@@ -10,4 +10,5 @@ import Foundation
 public enum AppEnvironment: String, Codable {
     case real
     case mock
+    case test
 }

@@ -18,6 +18,9 @@ struct WebSocketFactory {
         
         case .mock:
             return MockWebSocketClient()
+            
+        case .test:
+            return TestWebSocketClient()
         }
     }
 }
