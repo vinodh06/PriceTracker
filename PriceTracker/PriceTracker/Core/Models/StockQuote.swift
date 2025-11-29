@@ -9,7 +9,7 @@
 import Foundation
 
 // MARK :- StockQuote
-struct StockQuote: Codable, Equatable, Hashable {
+struct StockQuote: Codable, Equatable {
     let tickerSymbol: String
     let description: String
     let currentPrice: Double
