@@ -11,7 +11,7 @@ import SwiftUI
 struct StockFeedView: View {
     @State var viewModel: StockFeedViewModel
     
-    init(environment: AppEnvironment = .real) {
+    init(environment: AppEnvironment = .mock) {
         self.viewModel = StockFeedViewModel(environment: environment)
     }
     
@@ -25,12 +25,12 @@ struct StockFeedView: View {
                 }
             }
             .animation(.default, value: viewModel.stocks)
+            .navigationBarHidden(true)
+            .safeAreaInset(edge: .top, spacing: 0) {
+                CustomToolbar()
+            }
+            .environment(viewModel)
         }
-        .navigationBarHidden(true)
-        .safeAreaInset(edge: .top, spacing: 0) {
-            CustomToolbar()
-        }
-        .environment(viewModel)
     }
 }
 
@@ -94,5 +94,5 @@ struct StockFeedItemView: View {
 }
 
 #Preview {
-    StockFeedView()
+    StockFeedView(environment: .mock)
 }

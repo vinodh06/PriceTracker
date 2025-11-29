@@ -1,5 +1,5 @@
 //
-//  FeedScheduler.swift
+//  RealFeedScheduler.swift
 //  PriceTracker
 //
 //  Created by Vinodhkumar Govindaraj on 29/11/25.

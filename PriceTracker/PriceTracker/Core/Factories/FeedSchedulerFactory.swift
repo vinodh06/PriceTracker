@@ -12,6 +12,9 @@ struct FeedSchedulerFactory {
         switch environment {
         case .real:
             return RealFeedScheduler()
+        
+        case .mock:
+            return MockFeedScheduler()
         }
     }
 }

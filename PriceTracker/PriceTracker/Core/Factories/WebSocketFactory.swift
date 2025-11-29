@@ -15,6 +15,9 @@ struct WebSocketFactory {
                 url: Constant.url,
                 session: URLSession(configuration: .default)
             )
+        
+        case .mock:
+            return MockWebSocketClient()
         }
     }
 }

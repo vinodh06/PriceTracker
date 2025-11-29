@@ -29,7 +29,7 @@ class StockFeedViewModel {
     // MARK: - Initialization
     init(environment: AppEnvironment) {
         self.webSocketClient = WebSocketFactory.makeService(for: environment)
-        self.scheduler = FeedSchedularFactory.makeService(for: environment)
+        self.scheduler = FeedSchedulerFactory.makeService(for: environment)
         
         setupWebSocketSubscriptions()
     }
