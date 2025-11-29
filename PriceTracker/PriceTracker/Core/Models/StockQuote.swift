@@ -5,15 +5,16 @@
 //  Created by Vinodhkumar Govindaraj on 28/11/25.
 //
 
-
 import Foundation
+import Observation
 
-// MARK :- StockQuote
-struct StockQuote: Codable, Equatable, Hashable {
+// MARK: - StockQuote
+@Observable
+final class StockQuote: Codable, Equatable, Hashable {
     let tickerSymbol: String
     let description: String
-    let currentPrice: Double
-    let previousPrice: Double?
+    var currentPrice: Double
+    var previousPrice: Double?
     
     init(
         tickerSymbol: String,
@@ -26,15 +27,50 @@ struct StockQuote: Codable, Equatable, Hashable {
         self.currentPrice = currentPrice
         self.previousPrice = previousPrice
     }
+    
+    enum CodingKeys: String, CodingKey {
+        case tickerSymbol
+        case description
+        case currentPrice
+        case previousPrice
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        tickerSymbol = try container.decode(String.self, forKey: .tickerSymbol)
+        description = try container.decode(String.self, forKey: .description)
+        currentPrice = try container.decode(Double.self, forKey: .currentPrice)
+        previousPrice = try container.decodeIfPresent(Double.self, forKey: .previousPrice)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(tickerSymbol, forKey: .tickerSymbol)
+        try container.encode(description, forKey: .description)
+        try container.encode(currentPrice, forKey: .currentPrice)
+        try container.encodeIfPresent(previousPrice, forKey: .previousPrice)
+    }
+    
+    // MARK: - Hashable
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(tickerSymbol)
+    }
+    
+    // MARK: - Equatable
+    static func == (lhs: StockQuote, rhs: StockQuote) -> Bool {
+        lhs.tickerSymbol == rhs.tickerSymbol
+    }
 }
 
+// MARK: - Identifiable
 extension StockQuote: Identifiable {
     var id: String { tickerSymbol }
 }
 
+// MARK: - Computed Properties
 extension StockQuote {
     var formattedCurrentPrice: String {
-        String(format: "%.2f", currentPrice)
+        String(format: "$%.2f", currentPrice)
     }
     
     var priceTrend: PriceTrend {
@@ -51,16 +87,13 @@ extension StockQuote {
     }
 
     func withUpdatedPrice(_ newPrice: Double) -> StockQuote {
-        StockQuote(
-            tickerSymbol: tickerSymbol,
-            description: description,
-            currentPrice: newPrice,
-            previousPrice: currentPrice
-        )
+        previousPrice = currentPrice
+        currentPrice = newPrice
+        return self
     }
 }
 
-// MARK :- PreviewData
+// MARK: - PreviewData
 extension StockQuote {
     static var data: [StockQuote] {
         [

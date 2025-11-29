@@ -63,10 +63,19 @@ class StockFeedViewModel {
     }
     
     // MARK: - Private Methods
-    private func handleStockUpdate(_ stocks: [StockQuote]) {
-        self.stocks = sortStocks(stocks)
+    private func handleStockUpdate(_ updatedStocks: [StockQuote]) {
+        updatedStocks.forEach { updatedStock in
+            guard let existingStock = stocks.first(where: { $0.tickerSymbol == updatedStock.tickerSymbol }) else {
+                stocks.append(updatedStock)
+                return
+            }
+
+            existingStock.previousPrice = existingStock.currentPrice
+            existingStock.currentPrice = updatedStock.currentPrice
+        }
+        
+        stocks.sort(by: { $0.currentPrice > $1.currentPrice })
     }
-    
     private func handleConnectionStateChange(_ newState: WebSocketConnectionState) {
         socketConnectionState = newState
         if socketConnectionState.isConnected {
@@ -104,12 +113,17 @@ class StockFeedViewModel {
     }
     
     private func sendPriceUpdates() {
-        guard isSocketConnected else {
-            return
+        guard isSocketConnected else { return }
+
+        let updatedStocks = stocks.map { stock in
+            StockQuote(
+                tickerSymbol: stock.tickerSymbol,
+                description: stock.description,
+                currentPrice: Double.random(in: 1...500),
+                previousPrice: stock.currentPrice
+            )
         }
 
-        let updatedStocks = stocks.map { $0.withUpdatedPrice(Double.random(in: 1...500)) }
-        
         webSocketClient.send(updatedStocks)
     }
     

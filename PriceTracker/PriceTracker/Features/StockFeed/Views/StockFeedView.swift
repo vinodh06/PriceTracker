@@ -7,33 +7,6 @@
 
 
 import SwiftUI
-/*
-struct StockFeedView: View {
-    @State var viewModel: StockFeedViewModel
-    
-    init(environment: AppEnvironment = .real) {
-        self.viewModel = StockFeedViewModel(environment: environment)
-    }
-    
-    var body: some View {
-        NavigationStack {
-            List(viewModel.stocks) { stock in
-                NavigationLink(
-                    destination: StockFeedDetailView(stockQuote: stock)
-                ) {
-                    StockFeedItemView(stock: stock)
-                }
-            }
-            .animation(.default, value: viewModel.stocks)
-            .navigationBarHidden(true)
-            .safeAreaInset(edge: .top, spacing: 0) {
-                CustomToolbar()
-            }
-            .environment(viewModel)
-        }
-    }
-}
-*/
 
 struct StockFeedView: View {
     @State var viewModel: StockFeedViewModel
