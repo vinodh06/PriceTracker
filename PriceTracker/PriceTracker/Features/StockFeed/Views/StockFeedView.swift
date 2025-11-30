@@ -10,17 +10,16 @@ import SwiftUI
 
 struct StockFeedView: View {
     @State var viewModel: StockFeedViewModel
+    @State private var navigationPath = NavigationPath()
     
     init(environment: AppEnvironment) {
         self.viewModel = StockFeedViewModel(environment: environment)
     }
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             List(viewModel.stocks) { stock in
-                NavigationLink(
-                    destination: StockFeedDetailView(stockQuote: stock)
-                ) {
+                NavigationLink(value: stock) {
                     StockFeedItemView(stock: stock)
                 }
             }
@@ -29,10 +28,28 @@ struct StockFeedView: View {
             .safeAreaInset(edge: .top, spacing: 0) {
                 CustomToolbar()
             }
-            .environment(viewModel)
+            .navigationDestination(for: StockQuote.self) { stock in
+                StockFeedDetailView(tickerSymbol: stock.tickerSymbol)
+            }
+            .onOpenURL { url in
+                handleDeepLink(url)
+            }
         }
+        .environment(viewModel)
+    }
+    
+    private func handleDeepLink(_ url: URL) {
+        guard url.scheme == "stocks",
+              url.host == "symbol",
+              let ticker = url.pathComponents.first,
+              let stock = viewModel.stocks.first(where: { $0.tickerSymbol == ticker }) else {
+            return
+        }
+
+        navigationPath = NavigationPath([stock])
     }
 }
+
 
 struct CustomToolbar: View {
     @Environment(StockFeedViewModel.self) var viewModel

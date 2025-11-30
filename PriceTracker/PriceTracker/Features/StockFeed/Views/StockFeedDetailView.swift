@@ -9,43 +9,47 @@
 import SwiftUI
 
 struct StockFeedDetailView: View {
-    let stockQuote: StockQuote
+    @Environment(StockFeedViewModel.self) private var viewModel
+    let tickerSymbol: String
+    
+    private var stock: StockQuote? {
+        viewModel.stocks.first(where: { $0.tickerSymbol == tickerSymbol })
+    }
     
     var body: some View {
-        VStack(spacing: 20) {
-            Text(stockQuote.tickerSymbol)
-                .font(.largeTitle)
-            
-            Text(stockQuote.description)
-                .font(.title)
-            
-            HStack {
-                Text(stockQuote.formattedCurrentPrice)
+        if let stock {
+            VStack(spacing: 20) {
+                Text(stock.tickerSymbol)
+                    .font(.largeTitle)
+                
+                Text(stock.description)
                     .font(.title)
                 
-                switch stockQuote.priceTrend {
-                case .up:
-                    Image(systemName: "arrow.up")
-                        .foregroundStyle(.green)
-                case .down:
-                    Image(systemName: "arrow.down")
-                        .foregroundStyle(.red)
-                case .noChange:
-                    Image(systemName: "minus")
+                HStack {
+                    Text(stock.formattedCurrentPrice)
+                        .font(.title)
+                        .contentTransition(.numericText())
+                    
+                    switch stock.priceTrend {
+                    case .up:
+                        Image(systemName: "arrow.up")
+                            .foregroundStyle(.green)
+                            .symbolEffect(.bounce, value: stock.currentPrice)
+                    case .down:
+                        Image(systemName: "arrow.down")
+                            .foregroundStyle(.red)
+                            .symbolEffect(.bounce, value: stock.currentPrice)
+                    case .noChange:
+                        Image(systemName: "minus")
+                    }
                 }
-                
             }
+            .padding()
+            .animation(.easeInOut(duration: 0.5), value: stock.currentPrice)
+        } else {
+            Text("Stock not found")
+                .font(.title)
+                .foregroundStyle(.secondary)
         }
-        .padding()
     }
-}
-
-#Preview {
-    let stockQuote = StockQuote(
-        tickerSymbol: "AAPL",
-        description: "Apple Inc.",
-        currentPrice: 100.00,
-        previousPrice: 120.00
-    )
-    StockFeedDetailView(stockQuote: stockQuote)
 }
